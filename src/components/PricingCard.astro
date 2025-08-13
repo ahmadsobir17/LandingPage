@@ -1,0 +1,13 @@
+---
+const { name = 'Basic', price = 'Rp0', features = [] } = Astro.props;
+---
+<div class="card flex flex-col gap-4">
+  <div>
+    <h3 class="text-lg font-semibold">{name}</h3>
+    <p class="text-3xl font-bold mt-2">{price}</p>
+  </div>
+  <ul class="space-y-2 text-sm">
+    {features.map((f) => (<li>• {f}</li>))}
+  </ul>
+  <button class="btn btn-primary mt-4">Pilih Paket</button>
+</div>

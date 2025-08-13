@@ -1,0 +1,19 @@
+---
+const { title = 'Your Brand', description = 'Fast landing with Astro + n8n', image = '/favicon.svg' } = Astro.props;
+---
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <link rel="icon" href="/favicon.svg" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={image} />
+    <title>{title}</title>
+  </head>
+  <body class="antialiased bg-gray-50 text-gray-800">
+    <slot />
+  </body>
+</html>

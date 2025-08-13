@@ -1,0 +1,127 @@
+---
+import Base from '~/layouts/Base.astro'
+import Header from '~/components/Header.astro'
+import Footer from '~/components/Footer.astro'
+import PricingCard from '~/components/PricingCard.astro'
+
+const TITLE = 'YourBrand – Landing Cepat, Tanpa Drama'
+const DESC = 'Bangun landing ngebut dengan Astro + Tailwind. Form lead langsung nyambung ke n8n.'
+---
+<Base title={TITLE} description={DESC}>
+  <Header />
+
+  <!-- Hero -->
+  <section class="section">
+    <div class="container grid md:grid-cols-2 items-center gap-10">
+      <div>
+        <h1 class="text-4xl md:text-5xl font-bold leading-tight">
+          Launch cepat, <span class="text-brand-600">tanpa ribet</span>
+        </h1>
+        <p class="mt-4 text-gray-600">
+          Template minimalis siap deploy ke AWS Amplify. Kencang, aman, dan gampang di-custom.
+        </p>
+        <div class="mt-6 flex items-center gap-3">
+          <a href="#cta" class="btn btn-primary">Coba Sekarang</a>
+          <a href="#fitur" class="btn btn-ghost">Lihat Fitur</a>
+        </div>
+      </div>
+      <div class="card">
+        <img src="/favicon.svg" alt="preview" class="h-24 w-24" />
+        <p class="mt-4 text-sm text-gray-600">Ganti logo & warna sesuai brandmu. Sederhana, tapi efektif.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Fitur -->
+  <section id="fitur" class="section bg-white">
+    <div class="container">
+      <h2 class="text-2xl md:text-3xl font-bold">Fitur yang kamu butuhkan</h2>
+      <div class="mt-8 grid md:grid-cols-3 gap-6">
+        <div class="card">
+          <h3 class="font-semibold">Kencang & Stabil</h3>
+          <p class="text-sm text-gray-600 mt-2">SSG + CDN: skor kecepatan tinggi, biaya rendah.</p>
+        </div>
+        <div class="card">
+          <h3 class="font-semibold">Form ke n8n</h3>
+          <p class="text-sm text-gray-600 mt-2">Lead langsung masuk ke workflow kamu (Sheets, WA, Telegram).</p>
+        </div>
+        <div class="card">
+          <h3 class="font-semibold">Siap SEO</h3>
+          <p class="text-sm text-gray-600 mt-2">Meta tag dasar, semantic HTML, gampang dioptimasi.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pricing -->
+  <section id="harga" class="section">
+    <div class="container">
+      <h2 class="text-2xl md:text-3xl font-bold">Harga</h2>
+      <p class="text-gray-600 mt-2">Mulai gratis. Upgrade nanti kalau butuh.</p>
+      <div class="mt-8 grid md:grid-cols-3 gap-6">
+        <PricingCard name="Free" price="Rp0" features={["Hosting Amplify subdomain", "Form ke n8n", "SEO dasar"]} />
+        <PricingCard name="Starter" price="Rp49rb/bln" features={["Custom domain", "Pixel & Analytics", "Support email"]} />
+        <PricingCard name="Pro" price="Rp149rb/bln" features={["A/B testing", "Komponen ekstra", "Priority support"]} />
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA + Form -->
+  <section id="cta" class="section bg-white">
+    <div class="container grid md:grid-cols-2 items-center gap-10">
+      <div>
+        <h2 class="text-2xl md:text-3xl font-bold">Mulai kumpulkan lead hari ini</h2>
+        <p class="mt-3 text-gray-600">Isi form singkat di samping. Kami akan hubungi segera.</p>
+      </div>
+      <form id="lead" class="card" netlify="false">
+        <div class="grid md:grid-cols-2 gap-4">
+          <div>
+            <label class="text-sm">Nama</label>
+            <input name="nama" required class="mt-1 w-full rounded-xl border border-gray-200 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-500" />
+          </div>
+          <div>
+            <label class="text-sm">Email</label>
+            <input type="email" name="email" required class="mt-1 w-full rounded-xl border border-gray-200 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-500" />
+          </div>
+          <div class="md:col-span-2">
+            <label class="text-sm">Pesan</label>
+            <textarea name="pesan" rows="3" class="mt-1 w-full rounded-xl border border-gray-200 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-500"></textarea>
+          </div>
+          <!-- Honeypot anti-spam -->
+          <input type="text" name="company" class="hidden" tabindex="-1" autocomplete="off" />
+        </div>
+        <button class="btn btn-primary mt-4">Kirim</button>
+        <p id="status" class="mt-3 text-sm"></p>
+      </form>
+
+      <script is:inline>
+        const form = document.getElementById('lead');
+        const statusEl = document.getElementById('status');
+        form?.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          statusEl.textContent = 'Mengirim…';
+          const data = Object.fromEntries(new FormData(form).entries());
+          // Honeypot
+          if (data.company) { statusEl.textContent = 'Terkirim.'; return; }
+          try {
+            const res = await fetch(import.meta.env.PUBLIC_N8N_WEBHOOK_URL, {
+              method: 'POST', headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                source: 'astro-landing',
+                timestamp: new Date().toISOString(),
+                ...data
+              })
+            });
+            if (!res.ok) throw new Error('Bad response');
+            statusEl.textContent = 'Terkirim! Cek WhatsApp/Telegram kamu.';
+            form.reset();
+          } catch (err) {
+            statusEl.textContent = 'Gagal mengirim. Coba lagi sebentar.';
+          }
+        });
+      </script>
+    </div>
+  </section>
+
+  <Footer />
+</Base>
